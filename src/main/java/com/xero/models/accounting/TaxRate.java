@@ -51,7 +51,9 @@ public class TaxRate {
     
     DELETED("DELETED"),
     
-    ARCHIVED("ARCHIVED");
+    ARCHIVED("ARCHIVED"),
+    
+    PENDING("PENDING");
 
     private String value;
 
@@ -109,6 +111,8 @@ public class TaxRate {
     ECINPUT("ECINPUT"),
     
     ECACQUISITIONS("ECACQUISITIONS"),
+    
+    EXEMPTCAPITAL("EXEMPTCAPITAL"),
     
     CAPITALSALESOUTPUT("CAPITALSALESOUTPUT"),
     

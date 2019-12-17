@@ -503,6 +503,11 @@ public class PurchaseOrder {
     this.purchaseOrderID = purchaseOrderID;
   }
 
+  public PurchaseOrder currencyRate(Double currencyRate) {
+    this.currencyRate = currencyRate;
+    return this;
+  }
+
    /**
    * The currency rate for a multicurrency purchase order. As no rate can  be specified, the XE.com day rate is used.
    * @return currencyRate
@@ -510,6 +515,10 @@ public class PurchaseOrder {
   @ApiModelProperty(value = "The currency rate for a multicurrency purchase order. As no rate can  be specified, the XE.com day rate is used.")
   public Double getCurrencyRate() {
     return currencyRate;
+  }
+
+  public void setCurrencyRate(Double currencyRate) {
+    this.currencyRate = currencyRate;
   }
 
    /**
