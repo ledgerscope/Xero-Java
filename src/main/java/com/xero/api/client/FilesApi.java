@@ -15,14 +15,19 @@ package com.xero.api.client;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.http.FileContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpMediaType;
 import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.MultipartContent;
+import com.google.api.client.util.Maps;
 import com.xero.api.ApiClient;
 import com.xero.api.XeroApiExceptionHandler;
 import com.xero.models.file.Association;
@@ -34,7 +39,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -1388,7 +1392,34 @@ public class FilesApi {
       logger.debug("POST " + genericUrl.toString());
     }
 
-    HttpContent content = null;
+    Map<String, String> parameters = Maps.newHashMap();
+    parameters.put("name", name);
+    parameters.put("filename", filename);
+
+    // Add parameters
+    MultipartContent content =
+        new MultipartContent()
+            .setMediaType(
+                new HttpMediaType("multipart/form-data")
+                    .setParameter("boundary", "__END_OF_PART__"));
+
+    for (String key : parameters.keySet()) {
+      MultipartContent.Part part =
+          new MultipartContent.Part(new ByteArrayContent(null, parameters.get(key).getBytes()));
+      part.setHeaders(
+          new HttpHeaders()
+              .set("Content-Disposition", String.format("form-data; name=\"%s\"", key)));
+      content.addPart(part);
+    }
+
+    FileContent fileContent = new FileContent(mimeType, body);
+    MultipartContent.Part part = new MultipartContent.Part(fileContent);
+    part.setHeaders(
+        new HttpHeaders()
+            .set(
+                "Content-Disposition",
+                String.format("form-data; name=\"content\"; filename=\"%s\"", filename)));
+    content.addPart(part);
     Credential credential =
         new Credential(BearerToken.authorizationHeaderAccessMethod()).setAccessToken(accessToken);
     HttpTransport transport = apiClient.getHttpTransport();
