@@ -32,7 +32,6 @@ import com.xero.api.ApiClient;
 import com.xero.api.XeroApiExceptionHandler;
 import com.xero.models.file.Association;
 import com.xero.models.file.FileObject;
-import com.xero.models.file.FileResponse204;
 import com.xero.models.file.Files;
 import com.xero.models.file.Folder;
 import java.io.ByteArrayInputStream;
@@ -93,22 +92,22 @@ public class FilesApi {
    *
    * <p><b>201</b> - A successful request
    *
-   * <p><b>400</b> - null
+   * <p><b>400</b> - invalid input, object invalid
    *
    * @param xeroTenantId Xero identifier for Tenant
-   * @param fileID File id for single object
+   * @param fileId File id for single object
    * @param association The association parameter
    * @param accessToken Authorization token for user set in header of each request
    * @return Association
    * @throws IOException if an error occurs while attempting to invoke the API
    */
   public Association createFileAssociation(
-      String accessToken, String xeroTenantId, UUID fileID, Association association)
+      String accessToken, String xeroTenantId, UUID fileId, Association association)
       throws IOException {
     try {
       TypeReference<Association> typeRef = new TypeReference<Association>() {};
       HttpResponse response =
-          createFileAssociationForHttpResponse(accessToken, xeroTenantId, fileID, association);
+          createFileAssociationForHttpResponse(accessToken, xeroTenantId, fileId, association);
       return apiClient.getObjectMapper().readValue(response.getContent(), typeRef);
     } catch (HttpResponseException e) {
       if (logger.isDebugEnabled()) {
@@ -127,16 +126,16 @@ public class FilesApi {
   }
 
   public HttpResponse createFileAssociationForHttpResponse(
-      String accessToken, String xeroTenantId, UUID fileID, Association association)
+      String accessToken, String xeroTenantId, UUID fileId, Association association)
       throws IOException {
     // verify the required parameter 'xeroTenantId' is set
     if (xeroTenantId == null) {
       throw new IllegalArgumentException(
           "Missing the required parameter 'xeroTenantId' when calling createFileAssociation");
-    } // verify the required parameter 'fileID' is set
-    if (fileID == null) {
+    } // verify the required parameter 'fileId' is set
+    if (fileId == null) {
       throw new IllegalArgumentException(
-          "Missing the required parameter 'fileID' when calling createFileAssociation");
+          "Missing the required parameter 'fileId' when calling createFileAssociation");
     }
     if (accessToken == null) {
       throw new IllegalArgumentException(
@@ -148,10 +147,10 @@ public class FilesApi {
     headers.setUserAgent(this.getUserAgent());
     // create a map of path variables
     final Map<String, Object> uriVariables = new HashMap<String, Object>();
-    uriVariables.put("FileID", fileID);
+    uriVariables.put("FileId", fileId);
 
     UriBuilder uriBuilder =
-        UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileID}/Associations");
+        UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileId}/Associations");
     String url = uriBuilder.buildFromMap(uriVariables).toString();
     GenericUrl genericUrl = new GenericUrl(url);
     if (logger.isDebugEnabled()) {
@@ -178,7 +177,7 @@ public class FilesApi {
    *
    * <p><b>200</b> - search results matching criteria
    *
-   * <p><b>400</b> - bad input parameter - TODO
+   * <p><b>400</b> - invalid input, object invalid
    *
    * @param xeroTenantId Xero identifier for Tenant
    * @param folder The folder parameter
@@ -248,16 +247,16 @@ public class FilesApi {
   /**
    * Deletes a specific file Delete a specific file
    *
-   * <p><b>204</b> - Success - return response 204 no content
+   * <p><b>204</b> - Successful deletion - return response 204 no content
    *
    * @param xeroTenantId Xero identifier for Tenant
-   * @param fileID File id for single object
+   * @param fileId File id for single object
    * @param accessToken Authorization token for user set in header of each request
    * @throws IOException if an error occurs while attempting to invoke the API
    */
-  public void deleteFile(String accessToken, String xeroTenantId, UUID fileID) throws IOException {
+  public void deleteFile(String accessToken, String xeroTenantId, UUID fileId) throws IOException {
     try {
-      deleteFileForHttpResponse(accessToken, xeroTenantId, fileID);
+      deleteFileForHttpResponse(accessToken, xeroTenantId, fileId);
     } catch (HttpResponseException e) {
       if (logger.isDebugEnabled()) {
         logger.debug(
@@ -274,15 +273,15 @@ public class FilesApi {
   }
 
   public HttpResponse deleteFileForHttpResponse(
-      String accessToken, String xeroTenantId, UUID fileID) throws IOException {
+      String accessToken, String xeroTenantId, UUID fileId) throws IOException {
     // verify the required parameter 'xeroTenantId' is set
     if (xeroTenantId == null) {
       throw new IllegalArgumentException(
           "Missing the required parameter 'xeroTenantId' when calling deleteFile");
-    } // verify the required parameter 'fileID' is set
-    if (fileID == null) {
+    } // verify the required parameter 'fileId' is set
+    if (fileId == null) {
       throw new IllegalArgumentException(
-          "Missing the required parameter 'fileID' when calling deleteFile");
+          "Missing the required parameter 'fileId' when calling deleteFile");
     }
     if (accessToken == null) {
       throw new IllegalArgumentException(
@@ -294,9 +293,9 @@ public class FilesApi {
     headers.setUserAgent(this.getUserAgent());
     // create a map of path variables
     final Map<String, Object> uriVariables = new HashMap<String, Object>();
-    uriVariables.put("FileID", fileID);
+    uriVariables.put("FileId", fileId);
 
-    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileID}");
+    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileId}");
     String url = uriBuilder.buildFromMap(uriVariables).toString();
     GenericUrl genericUrl = new GenericUrl(url);
     if (logger.isDebugEnabled()) {
@@ -320,24 +319,18 @@ public class FilesApi {
    * Deletes an existing file association By passing in the appropriate options, you can create a
    * new folder
    *
-   * <p><b>204</b> - A successful request
-   *
-   * <p><b>400</b> - bad input parameter - TODO
+   * <p><b>204</b> - Successful deletion - return response 204 no content
    *
    * @param xeroTenantId Xero identifier for Tenant
-   * @param fileID File id for single object
-   * @param objectID Object id for single object
+   * @param fileId File id for single object
+   * @param objectId Object id for single object
    * @param accessToken Authorization token for user set in header of each request
-   * @return FileResponse204
    * @throws IOException if an error occurs while attempting to invoke the API
    */
-  public FileResponse204 deleteFileAssociation(
-      String accessToken, String xeroTenantId, UUID fileID, UUID objectID) throws IOException {
+  public void deleteFileAssociation(
+      String accessToken, String xeroTenantId, UUID fileId, UUID objectId) throws IOException {
     try {
-      TypeReference<FileResponse204> typeRef = new TypeReference<FileResponse204>() {};
-      HttpResponse response =
-          deleteFileAssociationForHttpResponse(accessToken, xeroTenantId, fileID, objectID);
-      return apiClient.getObjectMapper().readValue(response.getContent(), typeRef);
+      deleteFileAssociationForHttpResponse(accessToken, xeroTenantId, fileId, objectId);
     } catch (HttpResponseException e) {
       if (logger.isDebugEnabled()) {
         logger.debug(
@@ -351,23 +344,22 @@ public class FilesApi {
     } catch (IOException ioe) {
       throw ioe;
     }
-    return null;
   }
 
   public HttpResponse deleteFileAssociationForHttpResponse(
-      String accessToken, String xeroTenantId, UUID fileID, UUID objectID) throws IOException {
+      String accessToken, String xeroTenantId, UUID fileId, UUID objectId) throws IOException {
     // verify the required parameter 'xeroTenantId' is set
     if (xeroTenantId == null) {
       throw new IllegalArgumentException(
           "Missing the required parameter 'xeroTenantId' when calling deleteFileAssociation");
-    } // verify the required parameter 'fileID' is set
-    if (fileID == null) {
+    } // verify the required parameter 'fileId' is set
+    if (fileId == null) {
       throw new IllegalArgumentException(
-          "Missing the required parameter 'fileID' when calling deleteFileAssociation");
-    } // verify the required parameter 'objectID' is set
-    if (objectID == null) {
+          "Missing the required parameter 'fileId' when calling deleteFileAssociation");
+    } // verify the required parameter 'objectId' is set
+    if (objectId == null) {
       throw new IllegalArgumentException(
-          "Missing the required parameter 'objectID' when calling deleteFileAssociation");
+          "Missing the required parameter 'objectId' when calling deleteFileAssociation");
     }
     if (accessToken == null) {
       throw new IllegalArgumentException(
@@ -375,15 +367,15 @@ public class FilesApi {
     }
     HttpHeaders headers = new HttpHeaders();
     headers.set("xero-tenant-id", xeroTenantId);
-    headers.setAccept("application/json");
+    headers.setAccept("");
     headers.setUserAgent(this.getUserAgent());
     // create a map of path variables
     final Map<String, Object> uriVariables = new HashMap<String, Object>();
-    uriVariables.put("FileID", fileID);
-    uriVariables.put("ObjectID", objectID);
+    uriVariables.put("FileId", fileId);
+    uriVariables.put("ObjectId", objectId);
 
     UriBuilder uriBuilder =
-        UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileID}/Associations/{ObjectID}");
+        UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileId}/Associations/{ObjectId}");
     String url = uriBuilder.buildFromMap(uriVariables).toString();
     GenericUrl genericUrl = new GenericUrl(url);
     if (logger.isDebugEnabled()) {
@@ -406,22 +398,17 @@ public class FilesApi {
   /**
    * Deletes a folder By passing in the appropriate ID, you can delete a folder
    *
-   * <p><b>204</b> - A successful request
-   *
-   * <p><b>400</b> - bad input parameter - TODO
+   * <p><b>204</b> - Successful deletion - return response 204 no content
    *
    * @param xeroTenantId Xero identifier for Tenant
    * @param folderId Folder id for single object
    * @param accessToken Authorization token for user set in header of each request
-   * @return FileResponse204
    * @throws IOException if an error occurs while attempting to invoke the API
    */
-  public FileResponse204 deleteFolder(String accessToken, String xeroTenantId, UUID folderId)
+  public void deleteFolder(String accessToken, String xeroTenantId, UUID folderId)
       throws IOException {
     try {
-      TypeReference<FileResponse204> typeRef = new TypeReference<FileResponse204>() {};
-      HttpResponse response = deleteFolderForHttpResponse(accessToken, xeroTenantId, folderId);
-      return apiClient.getObjectMapper().readValue(response.getContent(), typeRef);
+      deleteFolderForHttpResponse(accessToken, xeroTenantId, folderId);
     } catch (HttpResponseException e) {
       if (logger.isDebugEnabled()) {
         logger.debug(
@@ -435,7 +422,6 @@ public class FilesApi {
     } catch (IOException ioe) {
       throw ioe;
     }
-    return null;
   }
 
   public HttpResponse deleteFolderForHttpResponse(
@@ -455,13 +441,13 @@ public class FilesApi {
     }
     HttpHeaders headers = new HttpHeaders();
     headers.set("xero-tenant-id", xeroTenantId);
-    headers.setAccept("application/json");
+    headers.setAccept("");
     headers.setUserAgent(this.getUserAgent());
     // create a map of path variables
     final Map<String, Object> uriVariables = new HashMap<String, Object>();
     uriVariables.put("FolderId", folderId);
 
-    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Folders/{FolderID}");
+    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Folders/{FolderId}");
     String url = uriBuilder.buildFromMap(uriVariables).toString();
     GenericUrl genericUrl = new GenericUrl(url);
     if (logger.isDebugEnabled()) {
@@ -539,7 +525,7 @@ public class FilesApi {
     uriVariables.put("ObjectId", objectId);
 
     UriBuilder uriBuilder =
-        UriBuilder.fromUri(apiClient.getBasePath() + "/Associations/{ObjectID}");
+        UriBuilder.fromUri(apiClient.getBasePath() + "/Associations/{ObjectId}");
     String url = uriBuilder.buildFromMap(uriVariables).toString();
     GenericUrl genericUrl = new GenericUrl(url);
     if (logger.isDebugEnabled()) {
@@ -565,16 +551,16 @@ public class FilesApi {
    * <p><b>200</b> - search results matching criteria
    *
    * @param xeroTenantId Xero identifier for Tenant
-   * @param fileID File id for single object
+   * @param fileId File id for single object
    * @param accessToken Authorization token for user set in header of each request
    * @return FileObject
    * @throws IOException if an error occurs while attempting to invoke the API
    */
-  public FileObject getFile(String accessToken, String xeroTenantId, UUID fileID)
+  public FileObject getFile(String accessToken, String xeroTenantId, UUID fileId)
       throws IOException {
     try {
       TypeReference<FileObject> typeRef = new TypeReference<FileObject>() {};
-      HttpResponse response = getFileForHttpResponse(accessToken, xeroTenantId, fileID);
+      HttpResponse response = getFileForHttpResponse(accessToken, xeroTenantId, fileId);
       return apiClient.getObjectMapper().readValue(response.getContent(), typeRef);
     } catch (HttpResponseException e) {
       if (logger.isDebugEnabled()) {
@@ -592,16 +578,16 @@ public class FilesApi {
     return null;
   }
 
-  public HttpResponse getFileForHttpResponse(String accessToken, String xeroTenantId, UUID fileID)
+  public HttpResponse getFileForHttpResponse(String accessToken, String xeroTenantId, UUID fileId)
       throws IOException {
     // verify the required parameter 'xeroTenantId' is set
     if (xeroTenantId == null) {
       throw new IllegalArgumentException(
           "Missing the required parameter 'xeroTenantId' when calling getFile");
-    } // verify the required parameter 'fileID' is set
-    if (fileID == null) {
+    } // verify the required parameter 'fileId' is set
+    if (fileId == null) {
       throw new IllegalArgumentException(
-          "Missing the required parameter 'fileID' when calling getFile");
+          "Missing the required parameter 'fileId' when calling getFile");
     }
     if (accessToken == null) {
       throw new IllegalArgumentException(
@@ -613,9 +599,9 @@ public class FilesApi {
     headers.setUserAgent(this.getUserAgent());
     // create a map of path variables
     final Map<String, Object> uriVariables = new HashMap<String, Object>();
-    uriVariables.put("FileID", fileID);
+    uriVariables.put("FileId", fileId);
 
-    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileID}");
+    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileId}");
     String url = uriBuilder.buildFromMap(uriVariables).toString();
     GenericUrl genericUrl = new GenericUrl(url);
     if (logger.isDebugEnabled()) {
@@ -641,16 +627,16 @@ public class FilesApi {
    * <p><b>200</b> - search results matching criteria
    *
    * @param xeroTenantId Xero identifier for Tenant
-   * @param fileID File id for single object
+   * @param fileId File id for single object
    * @param accessToken Authorization token for user set in header of each request
    * @return List&lt;Association&gt;
    * @throws IOException if an error occurs while attempting to invoke the API
    */
-  public List<Association> getFileAssociations(String accessToken, String xeroTenantId, UUID fileID)
+  public List<Association> getFileAssociations(String accessToken, String xeroTenantId, UUID fileId)
       throws IOException {
     try {
       TypeReference<List<Association>> typeRef = new TypeReference<List<Association>>() {};
-      HttpResponse response = getFileAssociationsForHttpResponse(accessToken, xeroTenantId, fileID);
+      HttpResponse response = getFileAssociationsForHttpResponse(accessToken, xeroTenantId, fileId);
       return apiClient.getObjectMapper().readValue(response.getContent(), typeRef);
     } catch (HttpResponseException e) {
       if (logger.isDebugEnabled()) {
@@ -669,15 +655,15 @@ public class FilesApi {
   }
 
   public HttpResponse getFileAssociationsForHttpResponse(
-      String accessToken, String xeroTenantId, UUID fileID) throws IOException {
+      String accessToken, String xeroTenantId, UUID fileId) throws IOException {
     // verify the required parameter 'xeroTenantId' is set
     if (xeroTenantId == null) {
       throw new IllegalArgumentException(
           "Missing the required parameter 'xeroTenantId' when calling getFileAssociations");
-    } // verify the required parameter 'fileID' is set
-    if (fileID == null) {
+    } // verify the required parameter 'fileId' is set
+    if (fileId == null) {
       throw new IllegalArgumentException(
-          "Missing the required parameter 'fileID' when calling getFileAssociations");
+          "Missing the required parameter 'fileId' when calling getFileAssociations");
     }
     if (accessToken == null) {
       throw new IllegalArgumentException(
@@ -689,10 +675,10 @@ public class FilesApi {
     headers.setUserAgent(this.getUserAgent());
     // create a map of path variables
     final Map<String, Object> uriVariables = new HashMap<String, Object>();
-    uriVariables.put("FileID", fileID);
+    uriVariables.put("FileId", fileId);
 
     UriBuilder uriBuilder =
-        UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileID}/Associations");
+        UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileId}/Associations");
     String url = uriBuilder.buildFromMap(uriVariables).toString();
     GenericUrl genericUrl = new GenericUrl(url);
     if (logger.isDebugEnabled()) {
@@ -719,16 +705,16 @@ public class FilesApi {
    * <p><b>200</b> - returns the byte array of the specific file based on id
    *
    * @param xeroTenantId Xero identifier for Tenant
-   * @param fileID File id for single object
+   * @param fileId File id for single object
    * @param accessToken Authorization token for user set in header of each request
    * @return File
    * @throws IOException if an error occurs while attempting to invoke the API
    */
-  public ByteArrayInputStream getFileContent(String accessToken, String xeroTenantId, UUID fileID)
+  public ByteArrayInputStream getFileContent(String accessToken, String xeroTenantId, UUID fileId)
       throws IOException {
     try {
       TypeReference<File> typeRef = new TypeReference<File>() {};
-      HttpResponse response = getFileContentForHttpResponse(accessToken, xeroTenantId, fileID);
+      HttpResponse response = getFileContentForHttpResponse(accessToken, xeroTenantId, fileId);
       InputStream is = response.getContent();
       return convertInputToByteArray(is);
 
@@ -749,15 +735,15 @@ public class FilesApi {
   }
 
   public HttpResponse getFileContentForHttpResponse(
-      String accessToken, String xeroTenantId, UUID fileID) throws IOException {
+      String accessToken, String xeroTenantId, UUID fileId) throws IOException {
     // verify the required parameter 'xeroTenantId' is set
     if (xeroTenantId == null) {
       throw new IllegalArgumentException(
           "Missing the required parameter 'xeroTenantId' when calling getFileContent");
-    } // verify the required parameter 'fileID' is set
-    if (fileID == null) {
+    } // verify the required parameter 'fileId' is set
+    if (fileId == null) {
       throw new IllegalArgumentException(
-          "Missing the required parameter 'fileID' when calling getFileContent");
+          "Missing the required parameter 'fileId' when calling getFileContent");
     }
     if (accessToken == null) {
       throw new IllegalArgumentException(
@@ -769,9 +755,9 @@ public class FilesApi {
     headers.setUserAgent(this.getUserAgent());
     // create a map of path variables
     final Map<String, Object> uriVariables = new HashMap<String, Object>();
-    uriVariables.put("FileID", fileID);
+    uriVariables.put("FileId", fileId);
 
-    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileID}/Content");
+    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileId}/Content");
     String url = uriBuilder.buildFromMap(uriVariables).toString();
     GenericUrl genericUrl = new GenericUrl(url);
     if (logger.isDebugEnabled()) {
@@ -903,8 +889,6 @@ public class FilesApi {
    *
    * <p><b>200</b> - search results matching criteria
    *
-   * <p><b>400</b> - bad input parameter - TODO
-   *
    * @param xeroTenantId Xero identifier for Tenant
    * @param folderId Folder id for single object
    * @param accessToken Authorization token for user set in header of each request
@@ -956,7 +940,7 @@ public class FilesApi {
     final Map<String, Object> uriVariables = new HashMap<String, Object>();
     uriVariables.put("FolderId", folderId);
 
-    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Folders/{FolderID}");
+    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Folders/{FolderId}");
     String url = uriBuilder.buildFromMap(uriVariables).toString();
     GenericUrl genericUrl = new GenericUrl(url);
     if (logger.isDebugEnabled()) {
@@ -980,8 +964,6 @@ public class FilesApi {
    * Retrieves folders By passing in the appropriate options, you can search for available folders
    *
    * <p><b>200</b> - search results matching criteria
-   *
-   * <p><b>400</b> - bad input parameter - TODO
    *
    * @param xeroTenantId Xero identifier for Tenant
    * @param sort values to sort by
@@ -1062,8 +1044,6 @@ public class FilesApi {
    *
    * <p><b>200</b> - search results matching criteria
    *
-   * <p><b>400</b> - bad input parameter - TODO
-   *
    * @param xeroTenantId Xero identifier for Tenant
    * @param accessToken Authorization token for user set in header of each request
    * @return Folder
@@ -1133,19 +1113,19 @@ public class FilesApi {
    * <p><b>400</b> - invalid input, object invalid
    *
    * @param xeroTenantId Xero identifier for Tenant
-   * @param fileID File id for single object
+   * @param fileId File id for single object
    * @param fileObject The fileObject parameter
    * @param accessToken Authorization token for user set in header of each request
    * @return FileObject
    * @throws IOException if an error occurs while attempting to invoke the API
    */
   public FileObject updateFile(
-      String accessToken, String xeroTenantId, UUID fileID, FileObject fileObject)
+      String accessToken, String xeroTenantId, UUID fileId, FileObject fileObject)
       throws IOException {
     try {
       TypeReference<FileObject> typeRef = new TypeReference<FileObject>() {};
       HttpResponse response =
-          updateFileForHttpResponse(accessToken, xeroTenantId, fileID, fileObject);
+          updateFileForHttpResponse(accessToken, xeroTenantId, fileId, fileObject);
       return apiClient.getObjectMapper().readValue(response.getContent(), typeRef);
     } catch (HttpResponseException e) {
       if (logger.isDebugEnabled()) {
@@ -1164,16 +1144,16 @@ public class FilesApi {
   }
 
   public HttpResponse updateFileForHttpResponse(
-      String accessToken, String xeroTenantId, UUID fileID, FileObject fileObject)
+      String accessToken, String xeroTenantId, UUID fileId, FileObject fileObject)
       throws IOException {
     // verify the required parameter 'xeroTenantId' is set
     if (xeroTenantId == null) {
       throw new IllegalArgumentException(
           "Missing the required parameter 'xeroTenantId' when calling updateFile");
-    } // verify the required parameter 'fileID' is set
-    if (fileID == null) {
+    } // verify the required parameter 'fileId' is set
+    if (fileId == null) {
       throw new IllegalArgumentException(
-          "Missing the required parameter 'fileID' when calling updateFile");
+          "Missing the required parameter 'fileId' when calling updateFile");
     }
     if (accessToken == null) {
       throw new IllegalArgumentException(
@@ -1185,9 +1165,9 @@ public class FilesApi {
     headers.setUserAgent(this.getUserAgent());
     // create a map of path variables
     final Map<String, Object> uriVariables = new HashMap<String, Object>();
-    uriVariables.put("FileID", fileID);
+    uriVariables.put("FileId", fileId);
 
-    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileID}");
+    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Files/{FileId}");
     String url = uriBuilder.buildFromMap(uriVariables).toString();
     GenericUrl genericUrl = new GenericUrl(url);
     if (logger.isDebugEnabled()) {
@@ -1274,7 +1254,7 @@ public class FilesApi {
     final Map<String, Object> uriVariables = new HashMap<String, Object>();
     uriVariables.put("FolderId", folderId);
 
-    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Folders/{FolderID}");
+    UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Folders/{FolderId}");
     String url = uriBuilder.buildFromMap(uriVariables).toString();
     GenericUrl genericUrl = new GenericUrl(url);
     if (logger.isDebugEnabled()) {
@@ -1368,7 +1348,7 @@ public class FilesApi {
     headers.setUserAgent(this.getUserAgent());
     UriBuilder uriBuilder = UriBuilder.fromUri(apiClient.getBasePath() + "/Files");
     if (folderId != null) {
-      String key = "folderId";
+      String key = "FolderId";
       Object value = folderId;
       if (value instanceof Collection) {
         uriBuilder = uriBuilder.queryParam(key, ((Collection) value).toArray());
