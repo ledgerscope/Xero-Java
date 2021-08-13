@@ -82,15 +82,9 @@ public class ApiClient {
         HttpRequestInitializer initializer,
         ObjectMapper objectMapper,
         HttpRequestFactory reqFactory
-    ) {
-        this.basePath = basePath == null ? defaultBasePath : (
-            basePath.endsWith("/") ? basePath.substring(0, basePath.length() - 1) : basePath
-        );
-        if (transport != null) {
-            this.httpTransport = transport;
-        }
-        this.httpRequestFactory = (reqFactory != null ? reqFactory : (transport == null ? Utils.getDefaultTransport() : transport).createRequestFactory(initializer) );
-        this.objectMapper = (objectMapper == null ? createDefaultObjectMapper() : objectMapper);
+    ) 
+    {
+        this(basePath, transport, initializer, objectMapper, reqFactory, defaultIdentityBasePath) ;
     }
 
     /** ApiClient method for initiazing object instance with custom properties 
