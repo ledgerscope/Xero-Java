@@ -40,6 +40,7 @@ import java.security.interfaces.RSAPublicKey;
 */
 public class ApiClient {
     private final String basePath;
+    private final String identityBasePath;
     private final HttpRequestFactory httpRequestFactory;
     private final ObjectMapper objectMapper;
     private HttpTransport httpTransport = new NetHttpTransport();
@@ -47,6 +48,7 @@ public class ApiClient {
     private int readTimeout = 180000;
 
     private static final String defaultBasePath = "https://api.xero.com/api.xro/2.0";
+    private static final String defaultIdentityBasePath = "https://identity.xero.com";
 
     // A reasonable default object mapper. Client can pass in a chosen ObjectMapper anyway, this is just for reasonable defaults.
     private static ObjectMapper createDefaultObjectMapper() {
@@ -84,6 +86,37 @@ public class ApiClient {
         this.basePath = basePath == null ? defaultBasePath : (
             basePath.endsWith("/") ? basePath.substring(0, basePath.length() - 1) : basePath
         );
+        if (transport != null) {
+            this.httpTransport = transport;
+        }
+        this.httpRequestFactory = (reqFactory != null ? reqFactory : (transport == null ? Utils.getDefaultTransport() : transport).createRequestFactory(initializer) );
+        this.objectMapper = (objectMapper == null ? createDefaultObjectMapper() : objectMapper);
+    }
+
+    /** ApiClient method for initiazing object instance with custom properties 
+    * @param basePath String that defines the base path for each API request
+    * @param transport HttpTransport required for creating the httpRequestFactory
+    * @param initializer HttpRequestInitializer for additional configuration during creation of httpRequestFactory
+    * @param objectMapper ObjectMapper object used to serialize and deserialize using model classes.
+    * @param reqFactory HttpRequestFactory is the thread-safe light-weight HTTP request factory layer on top of the HTTP transport
+    * @param identityBasePath String that defines the identity base path for each API request
+    */
+    public ApiClient(
+        String basePath,
+        HttpTransport transport,
+        HttpRequestInitializer initializer,
+        ObjectMapper objectMapper,
+        HttpRequestFactory reqFactory,
+        String identityBasePath
+    ) {
+        this.basePath = basePath == null ? defaultBasePath : (
+            basePath.endsWith("/") ? basePath.substring(0, basePath.length() - 1) : basePath
+        );
+
+        this.identityBasePath = identityBasePath == null ? defaultIdentityBasePath : (
+            identityBasePath.endsWith("/") ? identityBasePath.substring(0, identityBasePath.length() - 1) : identityBasePath
+        );
+
         if (transport != null) {
             this.httpTransport = transport;
         }
@@ -187,15 +220,15 @@ public class ApiClient {
     * @exception JwkException thrown to indicate a problem while verifying a JWT
     */
     public DecodedJWT verify(String accessToken) throws MalformedURLException, JwkException {
-		
-    	DecodedJWT unverifiedJWT = JWT.decode(accessToken);        
-    	JwkProvider provider = new UrlJwkProvider(new URL("https://identity.xero.com/.well-known/openid-configuration/jwks"));
+    	DecodedJWT unverifiedJWT = JWT.decode(accessToken);
+
+    	JwkProvider provider = new UrlJwkProvider(new URL(identityBasePath + "/.well-known/openid-configuration/jwks"));
 		Jwk jwk = provider.get(unverifiedJWT.getKeyId());
 	
 		Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(),null);
 		 
 		JWTVerifier verifier = JWT.require(algorithm)
-				 .withIssuer("https://identity.xero.com")
+				 .withIssuer(identityBasePath)
                  .acceptLeeway(1000)
 				 .build();
 		DecodedJWT verifiedJWT = verifier.verify(accessToken);
@@ -221,7 +254,7 @@ public class ApiClient {
 		HttpContent content = new ByteArrayContent("application/x-www-form-urlencoded", postData);
 	
 		// REVOKE URL DEFINED
-		GenericUrl url = new GenericUrl("https://identity.xero.com/connect/revocation");
+		GenericUrl url = new GenericUrl(identityBasePath + "/connect/revocation");
         		
 		HttpTransport transport = this.getHttpTransport();
 	    HttpRequestFactory requestFactory = transport.createRequestFactory();
