@@ -15,29 +15,30 @@
 		</license>
 	</licenses>
 	<profiles>
-	<profile>
-		<id>Xero</id>
-		<distributionManagement>
-			<snapshotRepository>
-				<id>ossrh</id>
-				<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			</snapshotRepository>
-			<repository>
-				<id>ossrh</id>
-				<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-			</repository>
-		</distributionManagement>
-	</profile>
-	<profile>
-		<id>Ledgerscope</id>
-		<distributionManagement>
-			<repository>
-				<id>github</id>
-				<name>GitHub OWNER Apache Maven Packages</name>
-				<url>https://maven.pkg.github.com/ledgerscope/Xero-Java</url>
-			</repository>
-		</distributionManagement>
-	</profile>
+		<profile>
+			<id>Xero</id>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+				</snapshotRepository>
+				<repository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+		<profile>
+			<id>Ledgerscope</id>
+			<distributionManagement>
+				<repository>
+					<id>github</id>
+					<name>GitHub OWNER Apache Maven Packages</name>
+					<url>https://maven.pkg.github.com/ledgerscope/Xero-Java</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+	</profiles>
     <developers>
         <developer>
             <name>Xero API Team</name>
