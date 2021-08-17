@@ -17,8 +17,8 @@
 
 			<distributionManagement>
 				<snapshotRepository>
-					<id>ossrh</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+					<id>github</id>
+					<url>https://maven.pkg.github.com/ledgerscope/Xero-Java</url>
 				</snapshotRepository>
 				<repository>
 					<id>github</id>
