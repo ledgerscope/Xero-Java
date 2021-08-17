@@ -15,10 +15,6 @@
 		</license>
 	</licenses>
 
-	<activeProfiles>
-    	<activeProfile>Ledgerscope</activeProfile>
-  	</activeProfiles>
-
 	<profiles>
 		<profile>
 			<id>Xero</id>
