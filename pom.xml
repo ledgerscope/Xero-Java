@@ -255,7 +255,6 @@
 				<extensions>true</extensions>
 				<configuration>
 					<serverId>github</serverId>
-					<nexusUrl>https://maven.pkg.github.com//</nexusUrl>
 					<autoReleaseAfterClose>true</autoReleaseAfterClose>
 				</configuration>
 			</plugin>
