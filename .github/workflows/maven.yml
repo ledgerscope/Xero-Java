@@ -8,12 +8,15 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
+  release:
+    types: [created]
 jobs:
-  build:
+  publish:
 
     runs-on: ubuntu-latest
-
+    permissions: 
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
