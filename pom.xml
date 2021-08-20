@@ -16,6 +16,10 @@
 	</licenses>
 
 			<distributionManagement>
+				<snapshotRepository>
+					<id>github</id>
+					<url>https://maven.pkg.github.com/ledgerscope/Xero-Java</url>
+				</snapshotRepository>
 				<repository>
 					<id>github</id>
 					<name>GitHub OWNER Apache Maven Packages</name>
