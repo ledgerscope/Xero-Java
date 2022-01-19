@@ -4,11 +4,11 @@
 [![Github stars](https://img.shields.io/github/stars/XeroAPI/Xero-Java.svg)](https://github.com/XeroAPI/Xero-Java/stargazers)
 
 
-The **Xero-Java** SDK makes it easy for developers to access Xero's APIs in their **Java** code, and build robust applications and software using small business & general ledger accounting data.
+The **Xero-Java** SDK makes it easy for developers to access QuickBooks Online and Sage Business Cloud Accounting data via Xero's APIs in their **Java** code, and build robust applications and software using small business & general ledger accounting data.
 # Table of Contents
 - [API Client documentation](#api-client-documentation)
 - [Sample Applications](#sample-applications)
-- [Xero Account Requirements](#xero-account-requirements)
+- [Ledgerflow Account Requirements](#xero-account-requirements)
 - [Installation](#installation)
 - [Authentication](#authentication)
 - [Custom Connections](#custom-connections)
@@ -36,21 +36,20 @@ This SDK supports full method coverage for the following Xero API sets:
 <img src="https://i.imgur.com/cvuZGNN.png" alt="drawing" width="350"/>
 
 <hr>
-
 ## Sample Applications
 Sample apps can get you started quickly with simple auth flows and advanced usage examples.
 
 | Sample App | Description |
 | --- | --- |
-| [`starter-app`](https://github.com/XeroAPI/xero-java-oauth2-starter) | Basic getting started code samples
-| [`full-app`](https://github.com/XeroAPI/xero-java-oauth2-app) | Complete app with more examples
-| [`custom-connections-starter`](https://github.com/XeroAPI/xero-java-custom-connections-starter) | Basic app showing Custom Connections - a Xero [premium option](https://developer.xero.com/documentation/oauth2/custom-connections) for building M2M integrations to a single org
+| [`starter-app`](https://github.com/ledgerscope/xero-java-oauth2-starter) | Basic getting started code samples
+| [`full-app`](https://github.com/ledgerscope/xero-java-oauth2-app) | Complete app with more examples
+| [`custom-connections-starter`](https://github.com/ledgerscope/xero-java-custom-connections-starter) | Basic app showing Custom Connections - a Xero [premium option](https://developer.xero.com/documentation/oauth2/custom-connections) for building M2M integrations to a single org
 
 <hr>
 
-## Xero Account Requirements
-- Create a [free Xero user account](https://www.xero.com/us/signup/api/)
-- Login to your Xero developer [dashboard](https://developer.xero.com/app/manage) and create an API application
+## Ledgerflow Account Requirements
+- Create a [free Ledgerflow user account](https://flow.ledgerscope.com/Account/Register)
+- Login to your Ledgerflow developer [dashboard](https://flow.ledgerscope.com/Partner/App) and create an API application
 - Copy the credentials from your API app and store them using a secure ENV variable strategy
 - Decide the [neccesary scopes](https://developer.xero.com/documentation/oauth2/scopes) for your app's functionality
 
@@ -67,7 +66,7 @@ Add the Xero Java SDK dependency to project via maven, gradle, sbt or other buil
 
 ---
 ## Authentication
-All API requests go through Xero's OAuth 2.0 gateway and require a valid `access_token` to be set on the `client` which appends the `access_token` [JWT](https://jwt.io/) to the header of each request.
+All API requests go through Ledgerflow's OAuth 2.0 gateway and require a valid `access_token` to be set on the `client` which appends the `access_token` [JWT](https://jwt.io/) to the header of each request.
 
 The code below shows how to perform the OAuth 2 authorization code flow.
 
@@ -76,11 +75,11 @@ The code below shows how to perform the OAuth 2 authorization code flow.
 3. *TokenStorage.java*
 4. *TokenRefresh.java*
 
-Create your [Xero app](https://developer.xero.com/myapps) to obtain your clientId, clientSecret and set your redirectUri. The redirectUri is your server that Xero will send a user back to once authorization is complete (aka callback url).
+Create your [Ledgerflow app](https://flow.ledgerscope.com/Partner/App) to obtain your clientId, clientSecret and set your redirectUri. The redirectUri is your server that Ledgerflow will send a user back to once authorization is complete (aka callback url).
 
 You can add or remove resources from the scopeList for your integration. We have a [list of all available scopes](https://developer.xero.com/documentation/oauth2/scopes).
 
-Lastly, you'll generate an authorization URL and redirect the user to Xero for authorization.
+Lastly, you'll generate an authorization URL and redirect the user to Ledgerflow for authorization.
 
 *Authorization.java*
 ```java
@@ -113,8 +112,8 @@ public class Authorization extends HttpServlet {
     final String clientId = "--CLIENT-ID--";
     final String clientSecret = "--CLIENT-SECRET--";
     final String redirectURI = "http://localhost:8080/starter/Callback";
-    final String TOKEN_SERVER_URL = "https://identity.xero.com/connect/token";
-    final String AUTHORIZATION_SERVER_URL = "https://login.xero.com/identity/connect/authorize";
+    final String TOKEN_SERVER_URL = "https://xeroapi.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token";
+    final String AUTHORIZATION_SERVER_URL = "https://xero.api.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/identity/connect/authorize";
     final NetHttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     final JsonFactory JSON_FACTORY = new JacksonFactory();
     final String secretState = "secret" + new Random().nextInt(999_999);
@@ -164,7 +163,7 @@ public class Authorization extends HttpServlet {
 
 After the user has selected an organisation to authorise, they will be returned to your application specified in the redirectUri.  Below is an example Callback servlet.  You'll get a *code* from callback url query string and use it to request you access token.
 
-An access token can be associate with one or more Xero orgs, so you'll need to call Xero's identity service (https://api.xero.com/Connections).  You'll receive an array of xero-tenant-id's (that identify the organisation(s) authorized). Use both the access token and the tenant id to access resources via the API.
+An access token can be associate with one or more Xero orgs, so you'll need to call Xero's identity service (https://xeroapi.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/Connections).  You'll receive an array of xero-tenant-id's (that identify the organisation(s) authorized). Use both the access token and the tenant id to access resources via the API.
 
 Lastly, we save the access token, refresh token and Xero tenant id.  We've mocked up a TokenStorage class for this demo.
 
@@ -204,8 +203,8 @@ public class Callback extends HttpServlet {
     final String clientId = "--CLIENT-ID--";
     final String clientSecret = "--CLIENT-SECRET--";
     final String redirectURI = "http://localhost:8080/starter/Callback";
-    final String TOKEN_SERVER_URL = "https://identity.xero.com/connect/token";
-    final String AUTHORIZATION_SERVER_URL = "https://login.xero.com/identity/connect/authorize";
+    final String TOKEN_SERVER_URL = "https://xeroapi.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token";
+    final String AUTHORIZATION_SERVER_URL = "https://xero.api.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/identity/connect/authorize";
     final NetHttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     final JsonFactory JSON_FACTORY = new JacksonFactory();
     final ApiClient defaultClient = new ApiClient();
@@ -260,7 +259,7 @@ public class Callback extends HttpServlet {
             try {
                 DecodedJWT verifiedJWT = defaultClient.verify(tokenResponse.getAccessToken());
                         
-                ApiClient defaultIdentityClient = new ApiClient("https://api.xero.com", null, null, null, null);
+                ApiClient defaultIdentityClient = new ApiClient("https://xeroapi.ledgerscope.com", null, null, null, null, "https://xeroapi.ledgerscope.com");
                 IdentityApi idApi = new IdentityApi(defaultIdentityClient);
                 List<Connection> connection = idApi.getConnections(tokenResponse.getAccessToken(),null);
                            
@@ -379,7 +378,7 @@ public class TokenRefresh {
     
     final String clientId = "--CLIENT-ID--";
     final String clientSecret = "--CLIENT-SECRET--";
-    final String TOKEN_SERVER_URL = "https://identity.xero.com/connect/token";
+    final String TOKEN_SERVER_URL = "https://xeroapi.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token";
     final ApiClient defaultClient = new ApiClient();
 
     public TokenRefresh() {
@@ -445,7 +444,7 @@ public class TokenRefresh {
 }
 ```
 
-It is recommended that you store this token set JSON in a datastore in relation to the user who has authenticated the Xero API connection. Each time you want to call the Xero API, you will need to access the previously generated token set, initialize it on the SDK `client`, and refresh your `access_token` prior to making API calls.
+It is recommended that you store this token set JSON in a datastore in relation to the user who has authenticated the Ledgerflow API connection. Each time you want to call the Ledgerflow API, you will need to access the previously generated token set, initialize it on the SDK `client`, and refresh your `access_token` prior to making API calls.
 
 ### Token Set
 | key | value | description |
@@ -459,9 +458,9 @@ It is recommended that you store this token set JSON in a datastore in relation 
 ---
 ## Custom Connections 
 
-Custom Connections are a Xero [premium option](https://developer.xero.com/documentation/oauth2/custom-connections) used for building M2M integrations to a single organisation. A custom connection uses OAuth 2.0's [`client_credentials`](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/) grant which eliminates the step of exchanging the temporary code for a token set.
+Custom Connections are a Xero [premium option](https://developer.xero.com/documentation/guides/oauth2/custom-connections) used for building M2M integrations to a single organisation. A custom connection uses OAuth 2.0's [`client_credentials`](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/) grant which eliminates the step of exchanging the temporary code for a token set.
 
-> [Sample Application full code example](https://github.com/XeroAPI/xero-java-custom-connections-starter)
+> [Sample Application full code example](https://github.com/ledgerscope/xero-java-custom-connections-starter)
 
 To use this SDK with a Custom Connection:
 ```java
@@ -475,7 +474,7 @@ To use this SDK with a Custom Connection:
 
     // client_credentials 
     TokenResponse tokenResponse = new ClientCredentialsTokenRequest(HTTP_TRANSPORT, JSON_FACTORY, 
-        new GenericUrl("https://identity.xero.com/connect/token"))
+        new GenericUrl("https://xeroapi.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token"))
         .setScopes(appStoreScopeList)
         .setClientAuthentication( new BasicAuthentication(clientId, clientSecret))
         .execute();
@@ -831,9 +830,6 @@ class TryCatchExample {
 ### Logging
 We've replace a specific logging plugin (org.apache.logging.log4j) with a logging facade org.slf4j. With version 4.x we'll use SLF4J and allow you to plug in the logging library of your choice at deployment time. This [blog post](https://www.baeldung.com/slf4j-with-log4j2-logback) explains how to add log4j2 for logging. To configure, add a log4j.properties file to the Resources directory.
 
-### Looking for version 3.x of the SDK?
-Codebase, samples and setup instructions located in [java-3.x branch](https://github.com/XeroAPI/Xero-Java/tree/java-3.x).
-
 ---
 ## Participating in Xero’s developer community
 
@@ -845,11 +841,11 @@ Here are a few things you should be aware of as a contributor:
 * You’re welcome to raise PRs. As our SDKs are generated we may use your code in the core SDK build instead of merging your code
 * We have a [contribution guide](https://github.com/XeroAPI/Xero-Java/blob/master/CONTRIBUTING.md) for you to follow when contributing to this SDK
 * Curious about how we generate our SDK’s? Have a [read of our process](https://devblog.xero.com/building-sdks-for-the-future-b79ff726dfd6) and have a look at our [OpenAPISpec](https://github.com/XeroAPI/Xero-OpenAPI)
-* This software is published under the [MIT License](https://github.com/XeroAPI/Xero-Java/blob/master/LICENSE)
+* This software is published under the [MIT License](https://github.com/ledgerscope/Xero-Java/blob/master/LICENSE)
 
 For questions that aren’t related to SDKs please refer to our [developer support page](https://developer.xero.com/support/).
 
 ### Contributing
-PRs, issues, and discussion are highly appreciated and encouraged. Note that the majority of this project is generated code based on [Xero's OpenAPI specs](https://github.com/XeroAPI/Xero-OpenAPI) - PR's will be evaluated and pre-merge will be incorporated into the root generation templates.
+PRs, issues, and discussion are highly appreciated and encouraged. Note that the majority of this project is generated code based on [Xero's OpenAPI specs](https://github.com/ledgerscope/Xero-OpenAPI) - PR's will be evaluated and pre-merge will be incorporated into the root generation templates.
 ### Versioning
 We do our best to keep OS industry `semver` standards, but we can make mistakes! If something is not accurately reflected in a version's release notes please let the team know.
