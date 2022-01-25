@@ -113,7 +113,7 @@ public class Authorization extends HttpServlet {
     final String clientId = "--CLIENT-ID--";
     final String clientSecret = "--CLIENT-SECRET--";
     final String redirectURI = "http://localhost:8080/starter/Callback";
-    final String TOKEN_SERVER_URL = "https://xeroapi.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token";
+    final String TOKEN_SERVER_URL = "https://xero.api.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token";
     final String AUTHORIZATION_SERVER_URL = "https://xero.api.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/identity/connect/authorize";
     final NetHttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     final JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -164,7 +164,7 @@ public class Authorization extends HttpServlet {
 
 After the user has selected an organisation to authorise, they will be returned to your application specified in the redirectUri.  Below is an example Callback servlet.  You'll get a *code* from callback url query string and use it to request you access token.
 
-An access token can be associate with one or more Xero orgs, so you'll need to call Xero's identity service (https://xeroapi.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/Connections).  You'll receive an array of xero-tenant-id's (that identify the organisation(s) authorized). Use both the access token and the tenant id to access resources via the API.
+An access token can be associate with one or more Xero orgs, so you'll need to call Xero's identity service (https://xero.api.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/Connections).  You'll receive an array of xero-tenant-id's (that identify the organisation(s) authorized). Use both the access token and the tenant id to access resources via the API.
 
 Lastly, we save the access token, refresh token and Xero tenant id.  We've mocked up a TokenStorage class for this demo.
 
@@ -204,7 +204,7 @@ public class Callback extends HttpServlet {
     final String clientId = "--CLIENT-ID--";
     final String clientSecret = "--CLIENT-SECRET--";
     final String redirectURI = "http://localhost:8080/starter/Callback";
-    final String TOKEN_SERVER_URL = "https://xeroapi.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token";
+    final String TOKEN_SERVER_URL = "https://xero.api.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token";
     final String AUTHORIZATION_SERVER_URL = "https://xero.api.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/identity/connect/authorize";
     final NetHttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     final JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -260,7 +260,7 @@ public class Callback extends HttpServlet {
             try {
                 DecodedJWT verifiedJWT = defaultClient.verify(tokenResponse.getAccessToken());
                         
-                ApiClient defaultIdentityClient = new ApiClient("https://xeroapi.ledgerscope.com", null, null, null, null, "https://xeroapi.ledgerscope.com");
+                ApiClient defaultIdentityClient = new ApiClient("https://xero.api.ledgerscope.com", null, null, null, null, "https://xero.api.ledgerscope.com");
                 IdentityApi idApi = new IdentityApi(defaultIdentityClient);
                 List<Connection> connection = idApi.getConnections(tokenResponse.getAccessToken(),null);
                            
@@ -379,7 +379,7 @@ public class TokenRefresh {
     
     final String clientId = "--CLIENT-ID--";
     final String clientSecret = "--CLIENT-SECRET--";
-    final String TOKEN_SERVER_URL = "https://xeroapi.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token";
+    final String TOKEN_SERVER_URL = "https://xero.api.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token";
     final ApiClient defaultClient = new ApiClient();
 
     public TokenRefresh() {
@@ -475,7 +475,7 @@ To use this SDK with a Custom Connection:
 
     // client_credentials 
     TokenResponse tokenResponse = new ClientCredentialsTokenRequest(HTTP_TRANSPORT, JSON_FACTORY, 
-        new GenericUrl("https://xeroapi.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token"))
+        new GenericUrl("https://xero.api.ledgerscope.com/--SOURCE ACCOUNTING SOFTWARE--/connect/token"))
         .setScopes(appStoreScopeList)
         .setClientAuthentication( new BasicAuthentication(clientId, clientSecret))
         .execute();
